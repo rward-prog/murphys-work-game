@@ -701,6 +701,9 @@ function showResult(){
     $('#m-msg').textContent = `Murphy pushed with ${fmt(g.F,1)} N over ${fmt(g.L,2)} m.`;
     const diff = g.Win - lv.Wout;
     $('#m-bars').innerHTML = barRows([
+      {l:'Force to lift it straight up (its weight)', v:lv.W, c:'c-out', t:`${fmt(lv.W,1)} N`},
+      {l:'Force Murphy used on the ramp', v:g.F, c:'c-in', t:`${fmt(g.F,1)} N`}
+    ]) + `<p style="margin:2px 0 8px;font-size:.95rem">The ramp cut the force by <b>${fmt(lv.W/g.F,1)}×</b>, but Murphy pushed over <b>${fmt(g.L,2)} m</b> instead of ${fmt(lv.h,2)} m.</p>` + barRows([
       {l:'Work out: lifting straight up', v:lv.Wout, c:'c-out', t:`${fmt(lv.Wout,1)} J`},
       {l:'Work in: push × ramp length',  v:g.Win,   c:'c-in',  t:`${fmt(g.Win,1)} J`}
     ]) + `<p style="margin:4px 0 0;font-size:.95rem">${lv.mu > 0
