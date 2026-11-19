@@ -1,0 +1,1001 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Murphy's Moving Day</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --ink:#1d1b19; --kraft:#c99a5b; --kraft-d:#8f6329; --tape:#f5c518; --tape-d:#d9a900;
+  --sky:#bfe3f2; --sky2:#e9f6fb; --road:#3f4750; --paper:#fffdf6;
+  --good:#2f9e55; --bad:#d64531; --blue:#2d7fb8;
+}
+*{box-sizing:border-box}
+[hidden]{display:none!important}
+html,body{margin:0}
+body{
+  font-family:'Fredoka','Trebuchet MS','Segoe UI',system-ui,sans-serif;
+  color:var(--ink); font-size:17px; line-height:1.4; min-height:100vh;
+  background:linear-gradient(#a9dcf2 0,#d7f0fa 55%,#eaf7fb 100%) fixed;
+}
+button{font:inherit;color:inherit}
+:focus-visible{outline:4px solid var(--blue);outline-offset:2px}
+
+.btn{font-weight:600;background:var(--tape);color:var(--ink);border:3px solid var(--ink);border-radius:14px;
+  padding:.55em 1.2em;box-shadow:0 4px 0 var(--ink);cursor:pointer;transition:transform .08s,box-shadow .08s}
+.btn:hover{transform:translateY(-1px)}
+.btn:active{transform:translateY(3px);box-shadow:0 1px 0 var(--ink)}
+.btn:disabled{background:#dedad0;color:#7b766a;border-color:#8f8a7c;box-shadow:0 4px 0 #8f8a7c;cursor:not-allowed;transform:none}
+.btn.ghost{background:var(--paper)}
+.btn.small{padding:.25em .8em;font-size:.88em;box-shadow:0 3px 0 var(--ink)}
+.btn.big{font-size:1.35em;padding:.5em 1.4em;width:100%}
+.panel{background:var(--paper);border:3px solid var(--ink);border-radius:16px;box-shadow:5px 5px 0 var(--ink);padding:14px 16px}
+
+.screen{max-width:1240px;margin:0 auto;padding:22px 18px 40px}
+
+/* intro */
+.intro{display:grid;grid-template-columns:1.3fr 1fr;gap:34px;align-items:center;min-height:calc(100vh - 80px)}
+.label{position:relative;background:var(--kraft);border:3px solid var(--ink);border-radius:6px;padding:34px 30px 26px;
+  transform:rotate(-1.4deg);box-shadow:7px 7px 0 var(--ink)}
+.label::before{content:"";position:absolute;left:50%;top:-16px;width:150px;height:34px;margin-left:-75px;
+  background:rgba(245,197,24,.88);border:2px solid rgba(29,27,25,.35);transform:rotate(1.5deg)}
+.label h1{margin:0;font-size:clamp(2.3rem,5.6vw,4.1rem);line-height:1.02;font-weight:700;letter-spacing:-.01em}
+.label p{margin:.5em 0 0;font-size:1.2rem;font-weight:500}
+.how{margin:26px 0 0;padding:0;list-style:none;display:grid;gap:10px}
+.how li{background:var(--paper);border:3px solid var(--ink);border-radius:12px;padding:10px 14px}
+.gnote{margin-top:16px;font-size:.95rem;background:var(--sky2);border:2px dashed var(--ink);border-radius:12px;padding:10px 14px}
+.intro .btn{margin-top:22px;font-size:1.4rem}
+.murphy-slot{min-height:300px}
+.photo{display:none;max-width:100%;max-height:360px;object-fit:contain}
+.photo.ok{display:block}
+.photo.round{width:130px;height:130px;object-fit:cover;object-position:center 20%;border:3px solid var(--ink);border-radius:50%;background:var(--sky2)}
+.fallback-dog{font-size:9rem;line-height:1}
+.murphy-slot{display:flex;flex-direction:column;align-items:center;gap:22px}
+.rob-card{display:flex;align-items:center;gap:12px;background:var(--paper);border:3px solid var(--ink);border-radius:14px;box-shadow:4px 4px 0 var(--ink);padding:10px 16px 10px 10px;transform:rotate(1.5deg)}
+.rob-card p{margin:0;line-height:1.25}
+.rob-card .photo.round{width:84px;height:84px}
+.brief{display:flex;gap:12px;align-items:flex-start}
+.photo.round.av{width:58px;height:58px;flex:none}
+.photo.round.big{width:150px;height:150px}
+.m-ph{text-align:center;max-width:170px;flex:none}
+.m-ph:has(.photo:not(.ok)){display:none}
+.cap{font-size:.85rem;font-style:italic;margin:4px 0 0!important;line-height:1.2}
+.photo.ok + .fallback-dog{display:none}
+
+/* level select */
+.top{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;margin-bottom:16px}
+.top h2{margin:0;font-size:2rem}
+.worlds{display:grid;gap:20px}
+.world h3{margin:0;font-size:1.4rem}
+.world p{margin:.1em 0 12px}
+.lvls{display:grid;grid-template-columns:repeat(5,1fr);gap:12px}
+.lvl{position:relative;background:var(--sky2);border:3px solid var(--ink);border-radius:14px;padding:10px 8px 8px;cursor:pointer;
+  text-align:center;box-shadow:0 4px 0 var(--ink);display:flex;flex-direction:column;gap:2px;align-items:center;min-height:112px}
+.lvl:hover{background:#fff7d1;transform:translateY(-2px)}
+.lvl b{font-size:1.9rem;line-height:1}
+.lvl small{font-size:.8rem;line-height:1.15;min-height:2.3em}
+.lvl .boss{position:absolute;top:-11px;right:-6px;background:var(--tape);border:2px solid var(--ink);border-radius:999px;padding:0 9px;font-size:.78rem;font-weight:600;transform:rotate(6deg)}
+.st{color:var(--tape-d);letter-spacing:2px;font-size:1.05rem;text-shadow:0 0 0 var(--ink)}
+.st .e{color:#c9c3b2}
+
+/* game */
+.gbar{display:flex;align-items:center;gap:14px;margin-bottom:14px}
+.gbar h2{margin:0;font-size:1.5rem;flex:1}
+.gwrap{display:grid;grid-template-columns:minmax(0,1.65fr) minmax(310px,1fr);gap:20px;align-items:start}
+.stage{border:3px solid var(--ink);border-radius:16px;overflow:hidden;box-shadow:5px 5px 0 var(--ink);background:var(--sky)}
+canvas{display:block;width:100%;height:auto}
+.controls{margin-top:18px}
+.controls label{display:flex;justify-content:space-between;font-weight:600;font-size:1.1rem}
+input[type=range]{width:100%;height:36px;accent-color:#e0a800;cursor:pointer}
+.sl-note{font-size:.92rem;color:#4a463f;margin:0 0 10px}
+.stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(125px,1fr));gap:10px}
+.stat{background:var(--sky2);border:2px solid var(--ink);border-radius:10px;padding:5px 10px}
+.stat span{display:block;font-size:.82rem;color:#4a463f}
+.stat b{font-size:1.2rem}
+.gauge{margin-top:12px}
+.gauge .track{position:relative;height:24px;background:#e6e1d2;border:3px solid var(--ink);border-radius:12px;overflow:hidden}
+.gauge .fill{height:100%;background:var(--good);width:0;transition:width .08s}
+.gauge .fill.over{background:var(--bad)}
+.gauge .limit{position:absolute;top:0;bottom:0;width:4px;background:var(--ink)}
+.gauge p{margin:5px 0 0;font-size:.95rem;font-weight:500}
+
+.clip{position:relative;background:var(--kraft);border:3px solid var(--ink);border-radius:16px;padding:34px 12px 12px;box-shadow:5px 5px 0 var(--ink)}
+.clip::before{content:"";position:absolute;left:50%;top:-14px;width:96px;height:36px;margin-left:-48px;background:linear-gradient(#e9ebee,#aab0b8);
+  border:3px solid var(--ink);border-radius:10px 10px 4px 4px}
+.paper{background:var(--paper);border:2px solid var(--ink);border-radius:8px;padding:14px}
+.paper h3{margin:0 0 4px;font-size:1.3rem}
+.paper p{margin:.3em 0}
+.job{width:100%;border-collapse:collapse;margin:10px 0;font-size:.95rem}
+.job td{padding:3px 6px;border-bottom:1px dashed #b9b29d}
+.job td:last-child{text-align:right;font-weight:600}
+details{margin:8px 0;background:var(--sky2);border:2px solid var(--ink);border-radius:10px;padding:6px 10px}
+summary{cursor:pointer;font-weight:600}
+dl{margin:6px 0 2px;font-size:.92rem}
+dt{font-weight:600;margin-top:5px}
+dd{margin:0}
+.q{border-top:2px solid var(--ink);margin-top:10px;padding-top:9px}
+.q-t{margin:0 0 6px!important}
+.q-row{display:flex;gap:8px;align-items:center}
+.q-row input{width:110px;font:inherit;font-weight:600;padding:5px 8px;border:3px solid var(--ink);border-radius:10px;background:#fff}
+.q-row .u{font-weight:600;min-width:2.2em}
+.q-hint{font-size:.9rem;background:#fff7d1;border:2px dashed var(--ink);border-radius:8px;padding:5px 8px;margin:6px 0 0!important}
+.q-fb{min-height:1.3em;font-size:.92rem;font-weight:500;margin:4px 0 0!important}
+.q.done .q-fb{color:var(--good);font-weight:600}
+.q.bad .q-fb{color:var(--bad)}
+.q.shake{animation:shake .3s}
+@keyframes shake{25%{transform:translateX(-5px)}75%{transform:translateX(5px)}}
+.mc{display:flex;flex-wrap:wrap;gap:8px}
+.mc button{background:#fff;border:3px solid var(--ink);border-radius:10px;padding:5px 12px;cursor:pointer;font-weight:500}
+.mc button:hover:not(:disabled){background:#fff7d1}
+.mc button.right{background:#c9efd6;border-color:var(--good)}
+.mc button:disabled{cursor:default}
+.linkbtn{background:none;border:0;padding:0;text-decoration:underline;cursor:pointer;font-size:.9rem;margin-top:4px}
+.note{font-size:.9rem;margin:8px 0 0!important;text-align:center;color:#4a463f}
+#push{margin-top:14px}
+
+/* modal */
+.modal{position:fixed;inset:0;background:rgba(29,27,25,.55);display:grid;place-items:center;padding:16px;z-index:10}
+.m-card{background:var(--paper);border:3px solid var(--ink);border-radius:18px;box-shadow:7px 7px 0 var(--ink);width:min(680px,100%);max-height:94vh;overflow:auto;padding:20px 22px}
+.m-top{display:flex;gap:16px;align-items:center}
+.m-top h2{margin:0;font-size:1.8rem}
+.m-top p{margin:.2em 0 0}
+.bars{margin:14px 0 6px;display:grid;gap:8px}
+.bar-row span{font-size:.92rem;font-weight:500}
+.bar{height:28px;background:#ece7d8;border:3px solid var(--ink);border-radius:9px;overflow:hidden;position:relative}
+.bar i{display:block;height:100%}
+.bar b{position:absolute;right:8px;top:0;line-height:22px;font-size:.95rem}
+.c-out{background:#7fc2e6}.c-in{background:var(--tape)}.c-over{background:#ef8f80}.c-lim{background:#9bd8ae}
+.why{background:var(--sky2);border:2px solid var(--ink);border-radius:10px;padding:8px 12px;margin:12px 0;font-size:.95rem}
+.m-stars{font-size:2.2rem;text-align:center;margin:6px 0}
+.m-btns{display:flex;gap:10px;flex-wrap:wrap;justify-content:center;margin-top:10px}
+#m-post .q:first-child{margin-top:4px}
+
+@media (max-width:980px){
+  .intro{grid-template-columns:1fr}
+  .gwrap{grid-template-columns:1fr}
+  .lvls{grid-template-columns:repeat(3,1fr)}
+}
+@media (prefers-reduced-motion:reduce){
+  *{animation:none!important;transition:none!important}
+}
+#sprites{position:fixed;left:-9999px;top:0;width:300px;height:300px;overflow:hidden;pointer-events:none}
+#sprites img{width:200px}
+</style>
+</head>
+<body>
+
+<noscript><p style="padding:20px">This game needs JavaScript. Please turn it on.</p></noscript>
+
+<!-- Murphy cutout sprites for the canvas (direct links into the Photo Bank) -->
+<div id="sprites" aria-hidden="true">
+  <img id="sp-push"  src="https://murphy-photos.vercel.app/cutouts/murphy-13-floor-sit-cutout.webp" alt="">
+  <img id="sp-stall" src="https://murphy-photos.vercel.app/cutouts/murphy-00-underbite-cutout.webp" alt="">
+  <img id="sp-fail"  src="https://murphy-photos.vercel.app/cutouts/murphy-13-floor-sit-cutout.webp" alt="">
+  <img id="sp-win"   src="https://murphy-photos.vercel.app/cutouts/murphy-01-rainbow-bone-cutout.webp" alt="">
+</div>
+
+<main id="app">
+
+  <section id="s-intro" class="screen">
+    <div class="intro">
+      <div>
+        <div class="label">
+          <h1>Murphy's Moving Day</h1>
+          <p>Pick the right ramp. Save Murphy's back.</p>
+        </div>
+        <ol class="how">
+          <li>Read the clipboard and answer its questions.</li>
+          <li>Set the ramp, then hit Push.</li>
+          <li>Watch the work: <b>work = force × distance</b>.</li>
+        </ol>
+        <p class="gnote">Heads up: we round gravity to <b>10 N/kg</b> (the real value is about 9.8) so the math stays clean.</p>
+        <button class="btn" id="start">Start moving</button>
+      </div>
+      <div class="murphy-slot">
+        <img class="photo" src="https://murphy-photos.vercel.app/cutouts/murphy-01-rainbow-bone-cutout.webp" alt="Murphy the dog">
+        <div class="fallback-dog" aria-hidden="true">🐕</div>
+        <div class="rob-card">
+          <img class="photo round" src="mr-ward.jpg" alt="Mr. Ward">
+          <p><b>Foreman: Mr. Ward</b><br>Murphy is the muscle.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section id="s-levels" class="screen" hidden>
+    <div class="top">
+      <h2>Pick a job</h2>
+      <div class="panel" style="padding:6px 14px"><b id="tot-stars">0</b> stars this session <span style="font-size:.85rem;color:#4a463f">(not saved when you close the tab)</span></div>
+    </div>
+    <div class="worlds" id="worlds"></div>
+  </section>
+
+  <section id="s-game" class="screen" hidden>
+    <div class="gbar">
+      <button class="btn ghost small" id="g-back">All jobs</button>
+      <h2 id="g-title"></h2>
+      <div class="st" id="g-stars" aria-label="Best stars on this job"></div>
+    </div>
+    <div class="gwrap">
+      <div>
+        <div class="stage"><canvas id="cv" width="960" height="440" role="img" aria-label="A ramp leading up to Murphy's moving truck, with Murphy pushing a crate"></canvas></div>
+        <div class="controls panel">
+          <label for="slider"><span id="sl-label">Ramp length</span><b id="sl-val"></b></label>
+          <input type="range" id="slider">
+          <p class="sl-note" id="sl-note"></p>
+          <div class="stats" id="stats"></div>
+          <div class="gauge" id="gauge" hidden>
+            <div class="track"><div class="fill" id="g-fill"></div><div class="limit" id="g-limit"></div></div>
+            <p id="g-text"></p>
+          </div>
+        </div>
+      </div>
+      <aside class="clip">
+        <div class="paper">
+          <div class="brief">
+            <img class="photo round av" src="mr-ward.jpg" alt="Mr. Ward">
+            <div><h3 id="c-title"></h3><p id="c-story"></p></div>
+          </div>
+          <table class="job" id="c-job"></table>
+          <details id="c-terms"><summary>Words to know</summary><dl id="c-dl"></dl></details>
+          <div id="c-qs"></div>
+          <button class="btn big" id="push">Push!</button>
+          <p class="note" id="push-note"></p>
+        </div>
+      </aside>
+    </div>
+  </section>
+</main>
+
+<div class="modal" id="modal" hidden role="dialog" aria-modal="true" aria-labelledby="m-title">
+  <div class="m-card">
+    <div class="m-top">
+      <div class="m-ph">
+        <img class="photo round big" id="m-ph" alt="Murphy">
+        <p class="cap" id="m-cap"></p>
+      </div>
+      <div class="m-ph" id="m-rob" hidden>
+        <img class="photo round big" src="mr-ward.jpg" alt="Mr. Ward">
+        <p class="cap">Mr. Ward is proud.</p>
+      </div>
+      <div><h2 id="m-title"></h2><p id="m-msg"></p></div>
+    </div>
+    <div class="bars" id="m-bars"></div>
+    <div id="m-post"></div>
+    <div class="why" id="m-why"></div>
+    <div class="m-stars st" id="m-stars"></div>
+    <div class="m-btns" id="m-btns"></div>
+  </div>
+</div>
+
+<script src="https://murphy-photos.vercel.app/murphy.js"></script>
+<script>
+(function(){
+'use strict';
+
+/* ---------- helpers ---------- */
+const G = 10, INK = '#1d1b19', TAPE = '#f5c518';
+const $  = (s, r=document) => r.querySelector(s);
+const $$ = (s, r=document) => Array.from(r.querySelectorAll(s));
+const clamp = (v,a,b) => Math.min(b, Math.max(a, v));
+const lerp = (a,b,t) => a + (b-a)*t;
+const fmt = (n,d=1) => String(Math.round(n*Math.pow(10,d))/Math.pow(10,d));
+const r1 = n => Math.round(n*10)/10;
+const el = (t,c,h) => { const e=document.createElement(t); if(c) e.className=c; if(h!=null) e.innerHTML=h; return e; };
+const reduced = !!(window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches);
+const FONT = "Fredoka,'Trebuchet MS',sans-serif";
+
+/* ---------- Murphy photo watcher (shows photos only once they load) ---------- */
+(function watch(){
+  let n = 0;
+  const t = setInterval(() => {
+    $$('img.photo').forEach(i => { if(i.complete && i.naturalWidth > 0) i.classList.add('ok'); });
+    if(++n > 50) clearInterval(t);
+  }, 400);
+  $$('img.photo').forEach(i => { i.addEventListener('load', () => { if(i.naturalWidth>0) i.classList.add('ok'); }); i.addEventListener('error', () => i.classList.remove('ok')); });
+})();
+const sprites = { push:$('#sp-push'), stall:$('#sp-stall'), fail:$('#sp-fail'), win:$('#sp-win') };
+
+/* ---------- worlds & levels ---------- */
+const WORLDS = [
+  { name:'Driveway', blurb:'Slide the ramp and watch the numbers.',
+    terms:[['Force','A push or pull, measured in newtons (N).'],
+           ['Work','Force × distance. Measured in joules (J).'],
+           ['Weight','The pull of gravity on a mass. Weight (N) = mass (kg) × 10.']] },
+  { name:'Loading dock', blurb:'Do the math first, then pick the ramp.',
+    terms:[['Joule (J)','The work done by 1 newton pushing something 1 meter.'],
+           ['Work out','The useful work: lifting the crate straight up. Weight × height.'],
+           ['Work in','The work Murphy actually does. Force × ramp length.']] },
+  { name:'Mountain move', blurb:'Mechanical advantage and ramp angles.',
+    terms:[['Ideal mechanical advantage (IMA)','How many times a ramp multiplies your push if there were no friction. IMA = ramp length ÷ ramp height.'],
+           ['Load','The weight being moved.'],
+           ['Effort','The force you push with.']] },
+  { name:'Rough roads', blurb:'Friction wants a cut of the work.',
+    terms:[['Friction','A force that resists sliding. Rougher surface, more friction.'],
+           ['Coefficient of friction (μ)','A number for how grippy two surfaces are. Bigger μ means more friction.'],
+           ['Efficiency','Work out ÷ work in × 100%. Lower means more work wasted as heat.']] }
+];
+const SHOW = {
+  1:{len:1,wt:1,wout:1,win:1,gauge:1},
+  2:{len:1},
+  3:{len:1,ang:1,ima:1},
+  4:{len:1,ang:1,win:1,gauge:1}
+};
+const WHY = {
+  1:"A longer ramp means a smaller push, but Murphy pushes that smaller force over a longer distance. The work stays the same.",
+  2:"Work = force × distance. Lifting the crate straight up takes weight × height joules no matter what. A longer ramp spreads that same work over more distance, so the force shrinks.",
+  3:"IMA = ramp length ÷ ramp height. A longer ramp (or a flatter angle) means more IMA, and the push needed is the load ÷ IMA.",
+  4:"Friction rubs against the crate the whole way up, so Murphy does more work than the lift alone needs. The extra turns into heat. Efficiency tells you how much of his work was useful."
+};
+
+const LV = [];
+function add(o){
+  o.id = LV.length + 1;
+  o.world = Math.ceil(o.id/5);
+  o.W = o.m*G; o.Wout = o.W*o.h;
+  o.mu = o.mu || 0; o.control = o.control || 'length';
+  o.hints = o.hints || 'button';
+  o.surface = o.surface || 'Smooth ramp (no friction)';
+  LV.push(o);
+}
+/* world 1: driveway */
+add({title:'Tennis ball box', crate:'Box of tennis balls', m:10, h:0.5, Fmax:60, Lmax:3, step:0.05,
+  story:"Moving day! Murphy says every box is a toy box. Start easy: slide the ramp until the push is under Murphy's limit."});
+add({title:'Kibble bag', crate:'Bag of kibble', m:20, h:0.8, Fmax:80, Lmax:4, step:0.05,
+  story:"Kibble is the most important cargo. Murphy has been guarding it since 6 a.m."});
+add({title:'Dog bed', crate:'Memory-foam dog bed', m:30, h:1.0, Fmax:75, Lmax:6, step:0.05,
+  story:"Dense. Somehow. Murphy refuses to leave it, so he's technically helping."});
+add({title:'Squeeze play', crate:'Bookshelf', m:40, h:1.2, Fmax:100, Lmax:5.5, step:0.05,
+  story:"The neighbor's recycling bins mean your ramp can only be so long. Find the sweet spot."});
+add({title:'The piano', crate:'Upright piano', m:80, h:1.5, Fmax:150, Lmax:9.5, step:0.1, boss:true,
+  story:"Murphy will absolutely sit on this. Get it in the truck before he does."});
+/* world 2: loading dock */
+add({title:'Tug toy crate', crate:'Crate of tug toys', m:20, h:1.0, Fmax:50, Lmax:6, step:0.1, hints:'always',
+  story:"Now the numbers hide. Answer the clipboard questions, then pick a ramp that works. The hints are out in the open for this one."});
+add({title:'Box of books', crate:'Box of books', m:25, h:1.2, Fmax:60, Lmax:7, step:0.1, hints:'always',
+  story:"Murphy has read none of these. He has chewed several."});
+add({title:'Treadmill', crate:'Treadmill', m:36, h:1.5, Fmax:90, Lmax:8, step:0.1,
+  story:"It's for Murphy. He has never used it. He never will."});
+add({title:'Fridge', crate:'Fridge', m:48, h:1.25, Fmax:80, Lmax:9, step:0.1,
+  story:"Murphy checked inside. It was empty. He is devastated."});
+add({title:'The couch', crate:'Couch', m:75, h:1.2, cm:120, Fmax:100, Lmax:11, step:0.1, boss:true,
+  story:"Murphy calls it his couch. The truck bed height is listed in centimeters, so watch your units."});
+/* world 3: mountain move */
+add({title:'The ledge', crate:'Washing machine', m:60, h:1.5, Fmax:120, Lmax:10, step:0.1, hints:'always',
+  story:"The new place is up a hill. Time for mechanical advantage: how many times does the ramp multiply Murphy's push?"});
+add({title:'Rock salt', crate:'Pallet of rock salt', m:90, h:2.0, Fmax:150, Lmax:15, step:0.1,
+  story:"Bought for the icy part later. Murphy thinks it's sand. It is not sand."});
+add({title:'Angle it', crate:'Squat rack', m:50, h:1.0, Fmax:100, Lmax:8, control:'angle',
+  story:"New control! You set the ramp angle now. A steeper angle means a shorter ramp and a bigger push."});
+add({title:'Plates', crate:'Box of weight plates', m:80, h:1.5, Fmax:100, Lmax:16, control:'angle',
+  story:"Mr. Ward's gym stuff. Murphy spots every lift. By spotting, we mean napping."});
+add({title:'The summit', crate:'Two crates stacked', m:120, h:2.4, Fmax:150, Lmax:24, control:'angle', boss:true,
+  story:"Two crates, one trip, a very high truck. The flattest angle you can use is set by the driveway."});
+/* world 4: rough roads */
+add({title:'Waxed ramp', crate:'Box of pots and pans', m:40, h:1.0, mu:0.05, Fmax:100, Lmax:8, step:0.1, surface:'Waxed (μ = 0.05)',
+  story:"Friction shows up. Even on a waxed ramp, Murphy now pushes against the rubbing as well as the lift."});
+add({title:'Plywood ramp', crate:'Dresser', m:50, h:1.2, mu:0.15, Fmax:140, Lmax:12, step:0.1, surface:'Plywood (μ = 0.15)',
+  story:"Plain plywood. Grippier, and splinters. Murphy walks around it, pointedly."});
+add({title:'Carpet ramp', crate:'Duffel of dog towels', m:30, h:1.0, mu:0.25, Fmax:120, Lmax:9, step:0.1, surface:'Carpet (μ = 0.25)',
+  story:"Someone nailed carpet to the ramp. Murphy approves. Physics does not."});
+add({title:'Muddy hill', crate:'Armchair', m:40, h:1.5, mu:0.4, Fmax:220, Lmax:13, step:0.1, surface:'Mud (μ = 0.40)',
+  story:"It rained. Murphy loves it. Your ramp is now a mud slide."});
+add({title:'Gravel road', crate:"Murphy's toys (all of them)", m:100, h:2.0, mu:0.2, Fmax:330, Lmax:19, step:0.1, surface:'Gravel (μ = 0.20)', boss:true,
+  story:"The last box. It holds every squeaky toy Murphy owns, and weighs 100 kg somehow."});
+
+const RAMP_COLOR = {0:'#e3c28a',0.05:'#efe3b8',0.15:'#d9b074',0.25:'#b5423a',0.4:'#6b4a2b',0.2:'#9d9d9d'};
+
+/* ---------- physics ---------- */
+function sliderRange(lv){
+  if(lv.control === 'angle'){
+    const tmin = Math.asin(lv.h/lv.Lmax)*180/Math.PI;
+    return { min: Math.ceil(tmin*2)/2, max:45, step:0.5, val:45 };
+  }
+  const step = lv.step || 0.1;
+  const min = +(Math.ceil(lv.h*1.05/step)*step).toFixed(4);
+  return { min, max:lv.Lmax, step, val:min };
+}
+function geom(lv, x){
+  let L, th;
+  if(lv.control === 'angle'){ th = x*Math.PI/180; L = lv.h/Math.sin(th); }
+  else { L = x; th = Math.asin(lv.h/L); }
+  const s = Math.sin(th), c = Math.cos(th);
+  const F = lv.W*(s + lv.mu*c);
+  return { L, th, deg: th*180/Math.PI, run: L*c, F, Win: F*L, IMA: L/lv.h };
+}
+function solve(lv){
+  const r = sliderRange(lv); let best = null;
+  const n = Math.round((r.max-r.min)/r.step);
+  for(let i=0;i<=n;i++){
+    const x = +(r.min + i*r.step).toFixed(4);
+    const g = geom(lv, x);
+    if(g.F <= lv.Fmax + 1e-9 && (!best || g.Win < best.Win)) best = g;
+  }
+  return best;
+}
+LV.forEach(lv => { lv.best = solve(lv); });
+
+/* ---------- questions ---------- */
+const num = (p,u,a,h,o={}) => ({t:'num', p, u, a, h, tol:(o.tol!=null?o.tol:0.015), abs:o.abs||0});
+const mc  = (p,opts,c,h) => ({t:'mc', p, opts, c, h});
+let run = null; // last push result
+
+function buildQs(lv){
+  const pre = [], post = [];
+  const W = lv.W, Wo = lv.Wout, F = lv.Fmax, h = lv.h;
+  const H = {
+    w:'Weight (N) = mass (kg) × 10',
+    work:'Work = force × distance. To lift it straight up, the force is the weight and the distance is the height.',
+    dist:'Work = force × distance, so distance = work ÷ force.',
+    force:'Force = work ÷ distance.',
+    ima:'IMA = ramp length ÷ ramp height.',
+    imaN:'IMA = load ÷ effort. The load is the weight.',
+    len:'IMA = length ÷ height, so length = IMA × height.'
+  };
+  if(lv.world === 2){
+    if(lv.cm) pre.push(num(`The truck bed is <b>${lv.cm} cm</b> high. How many meters is that?`,'m',h,'100 cm = 1 m'));
+    pre.push(num(`What does the crate weigh? Its mass is <b>${lv.m} kg</b>.`,'N',W,H.w));
+    pre.push(num(lv.cm ? `How much work does it take to lift it straight up to the truck bed?`
+                       : `How much work does it take to lift it straight up to the truck bed (<b>${h} m</b> high)?`,'J',Wo,H.work));
+    if(lv.id === 9) pre.push(num(`What push force would a <b>6 m</b> ramp need?`,'N',Wo/6,H.force));
+    pre.push(num(`Murphy can push with at most <b>${F} N</b>. What's the <b>shortest</b> ramp that works?`,'m',Wo/F,H.dist));
+  }
+  if(lv.world === 3){
+    if(lv.id === 11) pre.push(num(`Warm-up: a <b>6 m</b> ramp climbs <b>1.5 m</b>. What is its IMA?`,'',4,H.ima));
+    if(lv.id === 12){
+      pre.push(num(`A <b>10 m</b> ramp climbs <b>${h} m</b>. What is its IMA?`,'',10/h,H.ima));
+      pre.push(num(`Murphy uses that ramp for the <b>${W} N</b> pallet. How much effort does he need? (effort = load ÷ IMA)`,'N',W/(10/h),H.imaN));
+    }
+    if(lv.id === 14) pre.push(num(`What do the plates weigh? Their mass is <b>${lv.m} kg</b>.`,'N',W,H.w));
+    if(lv.id === 15) pre.push(num(`Two crates: <b>70 kg</b> and <b>50 kg</b>. What's the total weight?`,'N',W,'Add the masses, then weight = mass × 10.'));
+    const load = (lv.id===14||lv.id===15) ? `Using that weight and Murphy's max push of <b>${F} N</b>` : `The load is <b>${W} N</b> and Murphy can push <b>${F} N</b>`;
+    pre.push(num(`${load}, what's the <b>smallest IMA</b> that works?`,'',W/F,H.imaN));
+    pre.push(num(`With that IMA and a <b>${h} m</b> climb, what's the <b>shortest</b> ramp?`,'m',W/F*h,H.len));
+  }
+  if(lv.world === 4){
+    pre.push(num(`What does the crate weigh? Its mass is <b>${lv.m} kg</b>.`,'N',W,H.w));
+    pre.push(num(`Useful work: how much work does it take to lift it straight up <b>${h} m</b>?`,'J',Wo,H.work));
+    pre.push(mc(`This ramp has friction. Compared with a frictionless ramp, Murphy's push will be…`,['Bigger','Smaller','The same'],0,'Friction fights the motion, so Murphy has to push harder.'));
+    if(lv.id === 18) pre.push(mc(`With friction, a longer ramp makes the total work in…`,['Bigger','Smaller','The same'],0,'Friction acts over the whole ramp. More ramp, more rubbing.'));
+    if(lv.id === 19) pre.push(mc(`The extra work (work in minus work out) mostly turns into…`,['Heat','Height','Mass'],0,'Rubbing surfaces warm up.'));
+    if(lv.id === 20) pre.push(mc(`To waste the least energy, which working ramp should Murphy pick?`,['The shortest one that works','The longest one that fits','It makes no difference'],0,'Friction acts over the whole ramp length.'));
+    post.push(num(() => `Murphy pushed with <b>${fmt(run.g.F)} N</b> over a <b>${fmt(run.g.L)} m</b> ramp. What was his work in?`,'J',
+      () => r1(run.g.F)*r1(run.g.L),'Work = force × distance.',{tol:0.02}));
+    post.push(num(`Efficiency = work out ÷ work in × 100. What was it? (use your work in from above)`,'%',
+      () => lv.Wout/(r1(run.g.F)*r1(run.g.L))*100,'Work out is the lift work you found earlier.',{tol:0,abs:2}));
+  }
+  return {pre, post};
+}
+
+/* ---------- state ---------- */
+const stars = {};
+let lv = null, qs = null, cur = null, sc = null;
+let pushes = 0, errors = 0, busy = false, anim = null, raf = 0, confetti = [];
+
+/* ---------- screens ---------- */
+function show(id){
+  ['s-intro','s-levels','s-game'].forEach(s => { $('#'+s).hidden = (s !== id); });
+  window.scrollTo(0,0);
+  if(id !== 's-game' && raf){ cancelAnimationFrame(raf); raf = 0; }
+}
+const starStr = n => '★'.repeat(n||0) + '<span class="e">' + '★'.repeat(3-(n||0)) + '</span>';
+
+function renderLevels(){
+  const wrap = $('#worlds'); wrap.innerHTML = '';
+  WORLDS.forEach((w,wi) => {
+    const box = el('section','panel world');
+    box.appendChild(el('h3',null,`${w.name}`));
+    box.appendChild(el('p',null,w.blurb));
+    const row = el('div','lvls');
+    LV.filter(l => l.world === wi+1).forEach(l => {
+      const b = el('button','lvl');
+      b.type = 'button';
+      b.innerHTML = `${l.boss?'<span class="boss">Boss</span>':''}<b>${l.id}</b><small>${l.title}</small><span class="st">${starStr(stars[l.id])}</span>`;
+      b.addEventListener('click', () => openLevel(l.id));
+      row.appendChild(b);
+    });
+    box.appendChild(row);
+    wrap.appendChild(box);
+  });
+  $('#tot-stars').textContent = Object.values(stars).reduce((a,b) => a+b, 0) + ' of 60';
+}
+
+/* ---------- open a level ---------- */
+function openLevel(id){
+  lv = LV[id-1];
+  qs = buildQs(lv);
+  pushes = 0; errors = 0; busy = false; anim = null; confetti = [];
+  $('#modal').hidden = true;
+  $('#g-title').textContent = `Job ${lv.id}: ${lv.title}`;
+  $('#g-stars').innerHTML = starStr(stars[lv.id]);
+  $('#c-title').textContent = lv.title;
+  $('#c-story').textContent = lv.story;
+
+  const job = [
+    ['Crate', `${lv.crate}, ${lv.m} kg`],
+    ['Truck bed height', lv.cm ? `${lv.cm} cm` : `${lv.h} m`],
+    ["Murphy's max push", `${lv.Fmax} N`],
+    ['Driveway length', `${lv.Lmax} m`],
+    ['Ramp surface', lv.surface]
+  ];
+  $('#c-job').innerHTML = job.map(r => `<tr><td>${r[0]}</td><td>${r[1]}</td></tr>`).join('');
+  const w = WORLDS[lv.world-1];
+  $('#c-dl').innerHTML = w.terms.map(t => `<dt>${t[0]}</dt><dd>${t[1]}</dd>`).join('');
+  $('#c-terms').open = (lv.id % 5 === 1);
+
+  // slider
+  const r = sliderRange(lv), sl = $('#slider');
+  sl.min = r.min; sl.max = r.max; sl.step = r.step; sl.value = r.val; sl.disabled = false;
+  $('#sl-label').textContent = lv.control === 'angle' ? 'Ramp angle' : 'Ramp length';
+  $('#sl-note').textContent = lv.control === 'angle'
+    ? `Steeper means a shorter ramp and a bigger push. The driveway (${lv.Lmax} m) sets the flattest angle.`
+    : `The driveway ends at ${lv.Lmax} m.` + (lv.world === 2 ? ' Your numbers show up after the push.' : '');
+  $('#gauge').hidden = !SHOW[lv.world].gauge;
+
+  // questions
+  const box = $('#c-qs'); box.innerHTML = '';
+  qs.pre.forEach((q,i) => renderQ(q, box, updateGate));
+  updateGate();
+
+  scene();
+  update();
+  show('s-game');
+  if(!raf) raf = requestAnimationFrame(loop);
+  $('#push').focus({preventScroll:true});
+}
+
+function updateGate(){
+  const ok = qs.pre.every(q => q.st && q.st.done);
+  $('#push').disabled = !ok || busy;
+  $('#push-note').textContent = ok ? '' : 'Answer every question on the clipboard to unlock the push.';
+}
+
+/* ---------- question UI ---------- */
+function renderQ(q, box, onChange){
+  const st = q.st = {done:false, wrong:0};
+  const wrap = el('div','q');
+  const p = typeof q.p === 'function' ? q.p() : q.p;
+  wrap.appendChild(el('p','q-t',p));
+  const fb = el('p','q-fb');
+  const hint = el('p','q-hint','<b>Hint:</b> ' + q.h);
+  const always = lv.hints === 'always';
+  hint.hidden = !always;
+  let hintBtn = null;
+
+  const fail = () => {
+    st.wrong++; errors++;
+    wrap.classList.remove('shake'); void wrap.offsetWidth; wrap.classList.add('shake','bad');
+    if(st.wrong >= 2) hint.hidden = false;
+    if(hintBtn && !hint.hidden) hintBtn.hidden = true;
+  };
+  const pass = (txt) => {
+    st.done = true; wrap.classList.remove('bad'); wrap.classList.add('done');
+    fb.textContent = '✓ ' + txt; hint.hidden = true; if(hintBtn) hintBtn.hidden = true;
+    onChange();
+  };
+
+  if(q.t === 'num'){
+    const row = el('div','q-row');
+    const inp = el('input'); inp.type = 'text'; inp.inputMode = 'decimal'; inp.autocomplete = 'off';
+    inp.setAttribute('aria-label','Your answer');
+    const u = el('span','u', q.u || '');
+    const go = el('button','btn small','Check'); go.type = 'button';
+    const check = () => {
+      const a = typeof q.a === 'function' ? q.a() : q.a;
+      const raw = inp.value.trim(); if(!raw) return;
+      const v = parseFloat(raw.replace(/,/g,''));
+      if(isNaN(v)){ fb.textContent = 'Type a number.'; return; }
+      const tol = Math.max(q.abs, Math.abs(a)*q.tol);
+      if(Math.abs(v-a) <= tol + 1e-9){
+        inp.disabled = true; go.disabled = true;
+        pass(`${fmt(a,2)} ${q.u||''}`.trim());
+      } else {
+        const close = Math.abs(v-a) <= Math.max(tol*8, Math.abs(a)*0.1);
+        fb.textContent = close ? 'Close! Check your rounding.' : 'Not yet. Check the formula and the units.';
+        fail();
+      }
+    };
+    go.addEventListener('click', check);
+    inp.addEventListener('keydown', e => { if(e.key === 'Enter'){ e.preventDefault(); check(); } });
+    row.append(inp, u, go);
+    wrap.appendChild(row);
+  } else {
+    const g = el('div','mc');
+    q.opts.forEach((o,i) => {
+      const b = el('button',null,o); b.type = 'button';
+      b.addEventListener('click', () => {
+        if(st.done) return;
+        if(i === q.c){ b.classList.add('right'); $$('button',g).forEach(x => x.disabled = true); pass(o); }
+        else { fb.textContent = 'Not quite. Think again.'; b.disabled = true; fail(); }
+      });
+      g.appendChild(b);
+    });
+    wrap.appendChild(g);
+  }
+  if(!always){
+    hintBtn = el('button','linkbtn','Show a hint'); hintBtn.type = 'button';
+    hintBtn.addEventListener('click', () => { hint.hidden = false; hintBtn.hidden = true; });
+    wrap.appendChild(hintBtn);
+  }
+  wrap.append(hint, fb);
+  box.appendChild(wrap);
+}
+
+/* ---------- readouts ---------- */
+function update(){
+  const x = +$('#slider').value;
+  cur = geom(lv, x);
+  const S = SHOW[lv.world];
+  $('#sl-val').textContent = lv.control === 'angle' ? `${fmt(x,1)}°` : `${fmt(x,2)} m`;
+  const items = [];
+  if(S.len)  items.push(['Ramp length', `${fmt(cur.L,2)} m`]);
+  if(S.ang)  items.push(['Angle', `${fmt(cur.deg,1)}°`]);
+  if(S.wt)   items.push(['Crate weight', `${fmt(lv.W,0)} N`]);
+  if(S.ima)  items.push(['IMA', fmt(cur.IMA,2)]);
+  if(S.wout) items.push(['Work out', `${fmt(lv.Wout,1)} J`]);
+  if(S.win)  items.push(['Work in', `${fmt(cur.Win,1)} J`]);
+  $('#stats').innerHTML = items.map(i => `<div class="stat"><span>${i[0]}</span><b>${i[1]}</b></div>`).join('');
+  if(S.gauge){
+    const cap = lv.Fmax*1.6, f = $('#g-fill');
+    f.style.width = clamp(cur.F/cap*100, 0, 100) + '%';
+    f.classList.toggle('over', cur.F > lv.Fmax + 1e-9);
+    $('#g-limit').style.left = (lv.Fmax/cap*100) + '%';
+    $('#g-text').innerHTML = `Push needed: <b>${fmt(cur.F,1)} N</b> &nbsp; Murphy's limit: <b>${lv.Fmax} N</b>`;
+  }
+}
+$('#slider').addEventListener('input', () => { if(!busy) update(); });
+
+/* ---------- scene geometry for canvas ---------- */
+const CW = 960, CH = 440, GY = 385, XT = 655;
+const cv = $('#cv'), ctx = cv.getContext('2d');
+function scene(){
+  const r = sliderRange(lv);
+  const a = geom(lv, r.min), b = geom(lv, r.max);
+  const runMax = Math.max(a.run, b.run);
+  const s = Math.min((XT-125)/runMax, 215/lv.h);
+  sc = { s, yb: GY - lv.h*s, side: 36 + 18*Math.sqrt(lv.m/120), xLim: XT - runMax*s };
+}
+
+/* ---------- push ---------- */
+function onPush(){
+  if(busy || $('#push').disabled) return;
+  busy = true; pushes++;
+  $('#slider').disabled = true; $('#push').disabled = true;
+  const g = cur, ok = g.F <= lv.Fmax + 1e-9;
+  run = { g, ok };
+  const k = reduced ? 0.25 : 1, now = performance.now();
+  if(ok){
+    anim = { kind:'win', t0:now, tUp:clamp(2000 + g.L*160, 2400, 4800)*k, tLoad:600*k };
+  } else {
+    const f = clamp(lv.Fmax/g.F*0.6, 0.15, 0.6);
+    anim = { kind:'fail', t0:now, f, tUp:1300*k, tHold:900*k, tBack:900*k };
+  }
+}
+$('#push').addEventListener('click', onPush);
+
+/* ---------- result modal ---------- */
+function barRows(rows){
+  const mx = Math.max.apply(null, rows.map(r => r.v));
+  return rows.map(r => `<div class="bar-row"><span>${r.l}</span><div class="bar"><i class="${r.c}" style="width:${Math.max(4, r.v/mx*100)}%"></i><b>${r.t}</b></div></div>`).join('');
+}
+function showResult(){
+  const g = run.g, m = $('#modal');
+  const ph = $('#m-ph'), cap = $('#m-cap');
+  ph.classList.remove('ok'); ph.removeAttribute('src'); cap.textContent = '';
+  if(window.Murphy){
+    (run.ok ? window.Murphy.right() : window.Murphy.wrong()).then(p => {
+      if(p){ ph.src = p.url; cap.textContent = p.caption || ''; }
+    }).catch(() => {});
+  }
+  const btns = $('#m-btns'); btns.innerHTML = '';
+  $('#m-post').innerHTML = ''; $('#m-stars').innerHTML = '';
+  const pick = a => a[Math.floor(Math.random()*a.length)];
+  const last = lv.id === LV.length;
+  $('#m-rob').hidden = !(run.ok && last);
+
+  if(run.ok){
+    $('#m-title').textContent = last ? 'Murphy is moved in!' : pick(['Loaded!','Nailed it!','Smooth move.','Murphy approves.']);
+    $('#m-msg').textContent = `Murphy pushed with ${fmt(g.F,1)} N over ${fmt(g.L,2)} m.`;
+    const diff = g.Win - lv.Wout;
+    $('#m-bars').innerHTML = barRows([
+      {l:'Work out: lifting straight up', v:lv.Wout, c:'c-out', t:`${fmt(lv.Wout,1)} J`},
+      {l:'Work in: push × ramp length',  v:g.Win,   c:'c-in',  t:`${fmt(g.Win,1)} J`}
+    ]) + `<p style="margin:4px 0 0;font-size:.95rem">${lv.mu > 0
+      ? `Efficiency: <b>${fmt(lv.Wout/g.Win*100,0)}%</b>. The extra ${fmt(diff,0)} J became heat.`
+      : `Same work either way. The ramp traded force for distance.`}</p>`;
+    $('#m-why').innerHTML = '<b>Why?</b> ' + WHY[lv.world];
+
+    const next = el('button','btn','Next job'); next.type = 'button'; next.hidden = last;
+    const again = el('button','btn ghost','Replay'); again.type = 'button';
+    const all = el('button','btn ghost','All jobs'); all.type = 'button';
+    next.addEventListener('click', () => openLevel(lv.id+1));
+    again.addEventListener('click', () => openLevel(lv.id));
+    all.addEventListener('click', () => { renderLevels(); show('s-levels'); $('#modal').hidden = true; });
+    btns.append(next, again, all);
+
+    const finish = () => {
+      let s = 1;
+      const quiet = qs.pre.length + qs.post.length === 0;
+      if(quiet ? pushes <= 2 : errors === 0) s++;
+      const eff = lv.mu > 0 ? g.Win <= 1.10*lv.best.Win : true;
+      if(pushes === 1 && eff) s++;
+      stars[lv.id] = Math.max(stars[lv.id]||0, s);
+      $('#m-stars').innerHTML = starStr(s);
+      $('#g-stars').innerHTML = starStr(stars[lv.id]);
+      next.disabled = false;
+    };
+    if(qs.post.length){
+      next.disabled = true;
+      const box = $('#m-post');
+      box.appendChild(el('p',null,'<b>Do the math on your run:</b>'));
+      qs.post.forEach(q => renderQ(q, box, () => { if(qs.post.every(x => x.st.done)) finish(); }));
+    } else finish();
+  } else {
+    $('#m-title').textContent = pick(['Murphy is stuck.','Too steep for Murphy.','Not quite.']);
+    $('#m-msg').textContent = `That ramp needs ${fmt(g.F,1)} N. Murphy's limit is ${lv.Fmax} N.`;
+    $('#m-bars').innerHTML = barRows([
+      {l:'Push needed', v:g.F, c:'c-over', t:`${fmt(g.F,1)} N`},
+      {l:"Murphy's limit", v:lv.Fmax, c:'c-lim', t:`${lv.Fmax} N`}
+    ]);
+    $('#m-why').innerHTML = '<b>Try this:</b> ' + (lv.control === 'angle'
+      ? 'a flatter angle makes a longer ramp and a smaller push.'
+      : 'a longer ramp spreads the lift over more distance, so the push shrinks.')
+      + (lv.mu > 0 ? ' Friction adds to the push on top of the lift.' : '');
+    const adj = el('button','btn','Adjust the ramp'); adj.type = 'button';
+    const all = el('button','btn ghost','All jobs'); all.type = 'button';
+    adj.addEventListener('click', closeFail);
+    all.addEventListener('click', () => { renderLevels(); show('s-levels'); $('#modal').hidden = true; });
+    btns.append(adj, all);
+  }
+  m.hidden = false;
+  const first = $('button:not([disabled]):not([hidden]), input', btns.parentElement);
+  (btns.querySelector('button:not([hidden]):not([disabled])') || first).focus({preventScroll:true});
+}
+function closeFail(){
+  $('#modal').hidden = true; anim = null; busy = false;
+  $('#slider').disabled = false; updateGate();
+  $('#slider').focus({preventScroll:true});
+}
+document.addEventListener('keydown', e => {
+  if(e.key === 'Escape' && !$('#modal').hidden && run && !run.ok) closeFail();
+});
+
+/* ---------- drawing ---------- */
+function rr(x,y,w,h,r){
+  ctx.beginPath(); ctx.moveTo(x+r,y); ctx.arcTo(x+w,y,x+w,y+h,r); ctx.arcTo(x+w,y+h,x,y+h,r);
+  ctx.arcTo(x,y+h,x,y,r); ctx.arcTo(x,y,x+w,y,r); ctx.closePath();
+}
+function cloud(x,y,k){
+  ctx.fillStyle = 'rgba(255,255,255,.92)'; ctx.beginPath();
+  ctx.ellipse(x,y,38*k,16*k,0,0,7); ctx.ellipse(x+26*k,y-10*k,26*k,16*k,0,0,7); ctx.ellipse(x-24*k,y-6*k,22*k,13*k,0,0,7); ctx.fill();
+}
+function drawBG(t){
+  const g = ctx.createLinearGradient(0,0,0,GY);
+  g.addColorStop(0,'#a9dcf2'); g.addColorStop(1,'#e3f5fb');
+  ctx.fillStyle = g; ctx.fillRect(0,0,CW,CH);
+  ctx.fillStyle = '#ffe27a'; ctx.beginPath(); ctx.arc(95,64,32,0,7); ctx.fill();
+  const drift = t*0.008;
+  cloud(((200+drift)%(CW+200))-100, 56, 1);
+  cloud(((520+drift*0.6)%(CW+200))-100, 104, 0.8);
+  cloud(((830+drift*0.8)%(CW+200))-100, 46, 0.9);
+  // houses
+  ctx.fillStyle = '#a9cddb';
+  [[10,70],[118,86],[236,64]].forEach(h => {
+    ctx.fillRect(h[0], GY-h[1], 86, h[1]);
+    ctx.beginPath(); ctx.moveTo(h[0]-6,GY-h[1]); ctx.lineTo(h[0]+43,GY-h[1]-34); ctx.lineTo(h[0]+92,GY-h[1]); ctx.fill();
+  });
+  // road
+  ctx.fillStyle = '#6b7580'; ctx.fillRect(0,GY,CW,10);
+  ctx.fillStyle = '#3f4750'; ctx.fillRect(0,GY+10,CW,CH-GY-10);
+  ctx.strokeStyle = TAPE; ctx.lineWidth = 4; ctx.setLineDash([28,22]);
+  ctx.beginPath(); ctx.moveTo(0,GY+42); ctx.lineTo(CW,GY+42); ctx.stroke(); ctx.setLineDash([]);
+  // driveway-end cone
+  const cx = sc.xLim - 16;
+  ctx.fillStyle = '#ef7b2c'; ctx.strokeStyle = INK; ctx.lineWidth = 3;
+  ctx.beginPath(); ctx.moveTo(cx-12,GY); ctx.lineTo(cx,GY-32); ctx.lineTo(cx+12,GY); ctx.closePath(); ctx.fill(); ctx.stroke();
+  ctx.fillStyle = '#fff'; ctx.fillRect(cx-7,GY-14,14,5);
+  ctx.fillStyle = '#e9eef2'; ctx.font = `500 13px ${FONT}`; ctx.textAlign = 'center';
+  ctx.fillText('driveway ends', cx+2, GY+28);
+}
+function drawTruck(){
+  const yb = sc.yb, bx = XT, bw = 170, bh = 140;
+  const r = Math.min(26, Math.max(12, (GY-yb)*0.5));
+  ctx.lineWidth = 3; ctx.strokeStyle = INK;
+  // wheels
+  [XT+62, XT+215].forEach(wx => {
+    ctx.fillStyle = '#222'; ctx.beginPath(); ctx.arc(wx, GY-r, r, 0, 7); ctx.fill(); ctx.stroke();
+    ctx.fillStyle = '#b9c0c8'; ctx.beginPath(); ctx.arc(wx, GY-r, r*0.42, 0, 7); ctx.fill();
+  });
+  // chassis
+  ctx.fillStyle = '#2b2f36'; ctx.fillRect(XT, yb, 285, 12); ctx.strokeRect(XT, yb, 285, 12);
+  // cargo interior
+  const gi = ctx.createLinearGradient(bx,0,bx+bw,0); gi.addColorStop(0,'#3a414d'); gi.addColorStop(1,'#59616f');
+  ctx.fillStyle = gi; ctx.fillRect(bx, yb-bh, bw, bh);
+  ctx.beginPath(); ctx.moveTo(bx,yb-bh); ctx.lineTo(bx+bw,yb-bh); ctx.lineTo(bx+bw,yb); ctx.stroke();
+  // boxes already inside
+  ctx.fillStyle = '#b98a4e'; ctx.lineWidth = 2.5;
+  ctx.fillRect(bx+104,yb-36,36,36); ctx.strokeRect(bx+104,yb-36,36,36);
+  ctx.fillRect(bx+134,yb-30-34,30,30); ctx.strokeRect(bx+134,yb-30-34,30,30);
+  ctx.fillRect(bx+138,yb-30,28,30); ctx.strokeRect(bx+138,yb-30,28,30);
+  ctx.lineWidth = 3;
+  // roof
+  ctx.fillStyle = '#fffdf6'; ctx.fillRect(bx, yb-bh-20, bw+6, 20); ctx.strokeRect(bx, yb-bh-20, bw+6, 20);
+  ctx.fillStyle = INK; ctx.font = `700 13px ${FONT}`; ctx.textAlign = 'left';
+  ctx.fillText("MURPHY'S MOVERS", bx+12, yb-bh-6);
+  // cab
+  const c0 = bx+bw+6;
+  ctx.fillStyle = '#d9482b'; ctx.beginPath();
+  ctx.moveTo(c0,yb); ctx.lineTo(c0,yb-95); ctx.lineTo(c0+58,yb-95); ctx.lineTo(c0+100,yb-55); ctx.lineTo(c0+109,yb-55); ctx.lineTo(c0+109,yb); ctx.closePath();
+  ctx.fill(); ctx.stroke();
+  ctx.fillStyle = '#bfe3f2'; ctx.beginPath();
+  ctx.moveTo(c0+10,yb-85); ctx.lineTo(c0+52,yb-85); ctx.lineTo(c0+88,yb-55); ctx.lineTo(c0+10,yb-55); ctx.closePath(); ctx.fill(); ctx.stroke();
+}
+function drawRamp(x0, th){
+  const yb = sc.yb, sn = Math.sin(th), cs = Math.cos(th), t = 10;
+  const col = RAMP_COLOR[lv.mu] || RAMP_COLOR[0];
+  ctx.fillStyle = col; ctx.strokeStyle = INK; ctx.lineWidth = 3;
+  ctx.beginPath();
+  ctx.moveTo(x0, GY); ctx.lineTo(XT, yb); ctx.lineTo(XT + sn*t, yb + cs*t); ctx.lineTo(x0 + sn*t, GY + cs*t); ctx.closePath();
+  ctx.fill(); ctx.stroke();
+  ctx.save(); ctx.strokeStyle = 'rgba(29,27,25,.28)'; ctx.lineWidth = 2;
+  const len = Math.hypot(XT-x0, yb-GY);
+  for(let d = 36; d < len-8; d += 36){
+    const px = x0 + Math.cos(th)*d, py = GY - sn*d;
+    ctx.beginPath(); ctx.moveTo(px, py); ctx.lineTo(px + sn*t, py + cs*t); ctx.stroke();
+  }
+  ctx.restore();
+}
+function drawCrate(cx, cy, rot, side){
+  ctx.save(); ctx.translate(cx, cy); ctx.rotate(rot);
+  ctx.fillStyle = '#d4a05a'; ctx.strokeStyle = INK; ctx.lineWidth = 3;
+  rr(-side/2, -side/2, side, side, 4); ctx.fill(); ctx.stroke();
+  ctx.fillStyle = 'rgba(245,197,24,.92)'; ctx.fillRect(-6, -side/2+1.5, 12, side-3);
+  const label = `${lv.m} kg`;
+  ctx.font = `600 12px ${FONT}`; ctx.textAlign = 'center';
+  const w = ctx.measureText(label).width + 8;
+  ctx.fillStyle = '#fffdf6'; ctx.fillRect(-w/2, side/2-19, w, 15);
+  ctx.fillStyle = INK; ctx.fillText(label, 0, side/2-7);
+  ctx.restore();
+}
+function dogFallback(mood){
+  const brown = '#b9793a', dark = '#7a4a1e', cream = '#f3dfbf';
+  ctx.lineCap = 'round'; ctx.lineJoin = 'round'; ctx.strokeStyle = INK; ctx.lineWidth = 3;
+  ctx.strokeStyle = dark; ctx.lineWidth = 7;
+  ctx.beginPath(); ctx.moveTo(-34,-44); ctx.quadraticCurveTo(-54,-60,-46,-78); ctx.stroke();
+  ctx.strokeStyle = INK; ctx.lineWidth = 3;
+  ctx.fillStyle = brown;
+  [[-28,-24],[-10,-24],[14,-24],[28,-24]].forEach(l => { rr(l[0],l[1],10,24,4); ctx.fill(); ctx.stroke(); });
+  ctx.beginPath(); ctx.ellipse(0,-40,38,21,0,0,7); ctx.fill(); ctx.stroke();
+  ctx.fillStyle = cream; ctx.beginPath(); ctx.ellipse(8,-32,22,10,0,0,7); ctx.fill();
+  ctx.fillStyle = brown; ctx.beginPath(); ctx.arc(38,-60,19,0,7); ctx.fill(); ctx.stroke();
+  ctx.fillStyle = dark; ctx.beginPath(); ctx.ellipse(26,-72,7,13,-0.4,0,7); ctx.fill(); ctx.stroke();
+  ctx.fillStyle = cream; ctx.beginPath(); ctx.ellipse(50,-54,11,8,0,0,7); ctx.fill(); ctx.stroke();
+  ctx.fillStyle = INK; ctx.beginPath(); ctx.arc(57,-57,3.4,0,7); ctx.fill();
+  ctx.lineWidth = 2.5;
+  if(mood === 'fail'){
+    ctx.beginPath(); ctx.moveTo(35,-68); ctx.lineTo(43,-60); ctx.moveTo(43,-68); ctx.lineTo(35,-60); ctx.stroke();
+  } else if(mood === 'stall'){
+    ctx.beginPath(); ctx.moveTo(33,-64); ctx.lineTo(44,-64); ctx.stroke();
+    ctx.fillStyle = '#7fc2e6'; ctx.beginPath(); ctx.ellipse(22,-50,3,5,0,0,7); ctx.fill();
+  } else {
+    ctx.fillStyle = INK; ctx.beginPath(); ctx.arc(40,-65,3.2,0,7); ctx.fill();
+  }
+  ctx.beginPath(); ctx.arc(52,-48,5,0.1,Math.PI-0.3); ctx.stroke();
+}
+function drawMurphy(key, ax, ay, rot, H){
+  const img = sprites[key];
+  const ready = img && img.complete && img.naturalWidth > 0;
+  ctx.save(); ctx.translate(ax, ay); ctx.rotate(rot);
+  if(ready){
+    const w = H*img.naturalWidth/img.naturalHeight;
+    ctx.drawImage(img, -w/2, -H, w, H);
+  } else {
+    const k = H/80; ctx.scale(k, k); dogFallback(key);
+  }
+  ctx.restore();
+}
+function bubble(text, x, y){
+  ctx.font = `600 16px ${FONT}`; ctx.textAlign = 'center';
+  const w = ctx.measureText(text).width + 22, h = 30;
+  const bx = clamp(x - w/2, 8, CW-w-8), by = Math.max(8, y - h - 10);
+  ctx.fillStyle = '#fffdf6'; ctx.strokeStyle = INK; ctx.lineWidth = 3;
+  rr(bx, by, w, h, 10); ctx.fill(); ctx.stroke();
+  ctx.beginPath(); ctx.moveTo(clamp(x,bx+14,bx+w-14)-7, by+h-1); ctx.lineTo(clamp(x,bx+14,bx+w-14), by+h+9); ctx.lineTo(clamp(x,bx+14,bx+w-14)+7, by+h-1);
+  ctx.fillStyle = '#fffdf6'; ctx.fill(); ctx.stroke();
+  ctx.fillStyle = INK; ctx.fillText(text, bx+w/2, by+h-9);
+}
+function burst(x, y){
+  if(reduced) return;
+  const cols = [TAPE,'#ef7b2c','#7fc2e6','#d9482b','#fffdf6'];
+  for(let i=0;i<70;i++){
+    confetti.push({x, y, vx:(Math.random()-0.5)*420, vy:-Math.random()*420-80, c:cols[i%cols.length], r:Math.random()*6, w:5+Math.random()*5, life:1.8});
+  }
+}
+let lastT = 0;
+function drawConfetti(now){
+  const dt = Math.min(0.05, (now-lastT)/1000 || 0);
+  confetti.forEach(p => { p.vy += 900*dt; p.x += p.vx*dt; p.y += p.vy*dt; p.r += 6*dt; p.life -= dt; });
+  confetti = confetti.filter(p => p.life > 0);
+  confetti.forEach(p => {
+    ctx.save(); ctx.globalAlpha = clamp(p.life, 0, 1); ctx.translate(p.x, p.y); ctx.rotate(p.r);
+    ctx.fillStyle = p.c; ctx.fillRect(-p.w/2, -2, p.w, 4); ctx.restore();
+  });
+}
+
+/* ---------- main render loop ---------- */
+const ease = p => p < 0.5 ? 2*p*p : 1 - Math.pow(-2*p+2, 2)/2;
+function loop(now){
+  raf = requestAnimationFrame(loop);
+  if(!lv || !cur) return;
+  render(now);
+  lastT = now;
+}
+function render(now){
+  const T = reduced ? 0 : now;
+  drawBG(T);
+  drawTruck();
+  const g = cur, th = g.th, s = sc.s, yb = sc.yb, side = sc.side;
+  const x0 = XT - g.run*s, sn = Math.sin(th), cs = Math.cos(th);
+  drawRamp(x0, th);
+
+  const P = d => ({ x: x0 + cs*d, y: GY - sn*d });
+  const Lpx = g.L*s, dStart = side/2, dEnd = Math.max(dStart, Lpx - side/2);
+  let d = dStart, mood = 'push', text = pushes > 0 ? 'Again!' : 'Ready!';
+  let loadP = -1, shake = 0, bounce = 0;
+
+  if(anim){
+    const t = Math.max(0, now - anim.t0);
+    if(anim.kind === 'win'){
+      if(t < anim.tUp){ d = lerp(dStart, dEnd, t/anim.tUp); text = 'hup hup hup!'; }
+      else if(t < anim.tUp + anim.tLoad){ d = dEnd; loadP = ease((t-anim.tUp)/anim.tLoad); text = 'hup hup hup!'; }
+      else {
+        d = dEnd; loadP = 1; mood = 'win'; text = 'Nailed it!'; bounce = Math.abs(Math.sin(now/170))*9;
+        if(!anim.done){ anim.done = true; burst(XT+85, yb-70); setTimeout(showResult, reduced ? 50 : 900); }
+      }
+    } else {
+      const dF = dStart + anim.f*(dEnd-dStart);
+      if(t < anim.tUp){ d = lerp(dStart, dF, 1-Math.pow(1-t/anim.tUp,2)); text = 'hup hup…'; }
+      else if(t < anim.tUp + anim.tHold){ d = dF; mood = 'stall'; text = 'hnnnng…'; shake = Math.sin(now/38)*2.5; }
+      else if(t < anim.tUp + anim.tHold + anim.tBack){
+        const p = (t-anim.tUp-anim.tHold)/anim.tBack; d = lerp(dF, dStart, p*p); mood = 'fail'; text = 'WHOA!';
+      } else {
+        d = dStart; mood = 'fail'; text = 'Ouch.';
+        if(!anim.done){ anim.done = true; setTimeout(showResult, reduced ? 50 : 350); }
+      }
+    }
+  }
+
+  // crate
+  const nx = -sn, ny = -cs;
+  let cp = P(d), cx = cp.x + nx*side/2 + shake, cy = cp.y + ny*side/2, rot = -th;
+  if(loadP >= 0){
+    const ep = P(dEnd), ex = ep.x + nx*side/2, ey = ep.y + ny*side/2;
+    const tx = XT + 22 + side/2, ty = yb - side/2;
+    cx = lerp(ex, tx, loadP); cy = lerp(ey, ty, loadP); rot = lerp(-th, 0, loadP);
+  }
+  // Murphy (drawn first so the crate stays visible on short ramps)
+  const dm = (loadP >= 0 ? dEnd : d) - side/2 - 26;
+  let ax, ay, mr;
+  if(dm >= 0){ const q = P(dm); ax = q.x; ay = q.y; mr = -th*0.5; }
+  else { ax = x0 + dm; ay = GY; mr = 0; }
+  ax += shake; ay -= bounce + (anim ? 0 : Math.sin(now/420)*1.5);
+  const H = 96;
+  drawMurphy(mood, ax, ay, mr, H);
+  drawCrate(cx, cy, rot, side);
+  bubble(text, ax, ay - H - 4);
+
+  if(confetti.length) drawConfetti(now);
+}
+
+/* ---------- wiring ---------- */
+$('#start').addEventListener('click', () => { renderLevels(); show('s-levels'); });
+$('#g-back').addEventListener('click', () => { renderLevels(); show('s-levels'); });
+
+//__TESTHOOK__
+})();
+</script>
+</body>
+</html>
